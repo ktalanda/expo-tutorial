@@ -1,11 +1,15 @@
 import { View, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
+import { type ImageSource } from "expo-image";
 
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 import CircleButton from "@/components/CircleButton";
+import EmojiPicker from "@/components/EmojiPicker";
+import EmojiList from "@/components/EmojiList";
+import EmojiSticker from "@/components/EmojiSticker";
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
 
@@ -14,6 +18,8 @@ export default function Index() {
     undefined
   );
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [selectedEmoji, setSelectedEmoji] = useState<ImageSource | null>(null);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -33,9 +39,15 @@ export default function Index() {
     setShowAppOptions(false);
   };
 
-  const onAddStricker = () => {};
+  const onAddStricker = () => {
+    setIsModalVisible(true);
+  };
 
   const onSaveImage = async () => {};
+
+  const onModalClose = async () => {
+    setIsModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -44,6 +56,7 @@ export default function Index() {
           imgSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
+        {selectedEmoji && <EmojiSticker imageSize={100} stickerSource={selectedEmoji} />}
       </View>
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
@@ -66,6 +79,9 @@ export default function Index() {
           />
         </View>
       )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setSelectedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
     </View>
   );
 }
